@@ -1,0 +1,33 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Environment Variables & Sensitive Credentials
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# SQLite Database & Storage (Preserve clean deployment state)
+*.db
+*.sqlite
+*.sqlite3
+backend/*.db
+
+# IDE & Operating System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+scratch/

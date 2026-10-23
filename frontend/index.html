@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Study Planner & Productivity Suite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>StudyPulse AI</h1>
+          <span>Smart Academic Planner</span>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li>
+          <a class="nav-item active" data-section="dashboard">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-section="planner">
+            <span class="nav-icon">🤖</span>
+            <span>AI Study Planner</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-section="tasks">
+            <span class="nav-icon">📋</span>
+            <span>Task Manager</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-section="tracker">
+            <span class="nav-icon">📈</span>
+            <span>Progress Tracker</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-section="profile">
+            <span class="nav-icon">👤</span>
+            <span>Student Profile</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-section="music">
+            <span class="nav-icon">🎧</span>
+            <span>Focus Music</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="system-status-pill" id="system-status-pill">
+          <span class="status-dot"></span>
+          <span id="status-text">System Online</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Top Header -->
+      <header class="top-header">
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">☰</button>
+        <div class="header-quote" id="header-quote-container">
+          <span>💡</span>
+          <span id="header-quote-text">Loading motivational quote...</span>
+          <button class="quote-refresh-btn" id="refresh-quote-btn" title="New Quote">🔄</button>
+        </div>
+
+        <div class="header-user">
+          <button class="btn btn-secondary btn-sm" id="open-assistant-btn">
+            <span>💬</span> AI Assistant
+          </button>
+          <div class="user-badge">
+            <div class="avatar-circle" id="user-avatar">A</div>
+            <span id="header-username">Student</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Containers -->
+      <main class="page-container">
+        <!-- 1. DASHBOARD VIEW -->
+        <section class="section-view active" id="view-dashboard">
+          <div class="section-header">
+            <div class="section-title">
+              <h2 id="dash-greeting">Welcome back, Student! 👋</h2>
+              <p id="dash-subtext">Here is your daily study briefing and progress snapshot.</p>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="dash-quick-plan-btn">
+                <span>⚡</span> Generate Study Plan
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats KPI Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon indigo">📋</div>
+              <div class="stat-info">
+                <h3>Total Tasks</h3>
+                <div class="stat-value" id="kpi-total-tasks">0</div>
+                <div class="stat-sub" id="kpi-total-hours">0.0 study hrs</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon emerald">✅</div>
+              <div class="stat-info">
+                <h3>Completed</h3>
+                <div class="stat-value" id="kpi-completed-tasks">0</div>
+                <div class="stat-sub" id="kpi-completion-rate">0% finished</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon amber">⏳</div>
+              <div class="stat-info">
+                <h3>Pending</h3>
+                <div class="stat-value" id="kpi-pending-tasks">0</div>
+                <div class="stat-sub">Active tasks</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon rose">🔥</div>
+              <div class="stat-info">
+                <h3>Urgent / Today</h3>
+                <div class="stat-value" id="kpi-urgent-tasks">0</div>
+                <div class="stat-sub" id="kpi-overdue-sub">0 overdue</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Dashboard Split Layout -->
+          <div class="dashboard-grid">
+            <!-- Left: Today's / Urgent Action Items -->
+            <div class="card">
+              <div class="card-title">
+                <h3>Today's Focus & Deadlines</h3>
+                <button class="btn btn-secondary btn-sm" id="dash-view-all-tasks">View All Tasks</button>
+              </div>
+              <div id="dash-tasks-container" class="task-list">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Right: Study Progress & Active Plan -->
+            <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <div>
+                <div class="card-title">
+                  <h3>Overall Progress</h3>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                  <span>Task Completion</span>
+                  <strong id="dash-progress-label">0%</strong>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" id="dash-progress-bar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <!-- Active Timetable Snapshot -->
+              <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <h4 style="font-size: 0.95rem; font-weight: 600;">Active Study Schedule</h4>
+                  <span class="badge badge-rule" id="dash-plan-badge">Rule-Based</span>
+                </div>
+                <p id="dash-plan-summary" style="font-size: 0.825rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                  Generating your dynamic study timetable...
+                </p>
+                <button class="btn btn-secondary btn-sm" style="width: 100%;" id="dash-open-planner-btn">
+                  Open Full Timetable ➔
+                </button>
+              </div>
+
+              <!-- Quick Focus Audio Launch -->
+              <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem;">Study Ambient Sound</h4>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="app.quickMusic('focused', 'lofi')">🎧 Lofi Focus</button>
+                  <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="app.quickMusic('calm', 'melody')">🍃 Calm Melody</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. AI STUDY PLANNER VIEW -->
+        <section class="section-view" id="view-planner">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>AI Study Planner & Timetable Generator</h2>
+              <p>Automatically balances subject difficulty, exam deadlines, and daily study availability.</p>
+            </div>
+          </div>
+
+          <!-- Planner Configuration Card -->
+          <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-title">
+              <h3>Schedule Configuration Parameters</h3>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label style="font-size: 0.85rem; color: var(--text-secondary);">Generation Mode:</label>
+                <select class="select-control" id="planner-mode-select">
+                  <option value="auto">Smart AI (with Automatic Heuristic Fallback)</option>
+                  <option value="rule">Deterministic Rule-Based (Zero API cost)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+              <div class="form-group">
+                <label for="plan-daily-hours">Daily Available Study Hours</label>
+                <input type="number" id="plan-daily-hours" class="input-control" value="4.0" step="0.5" min="1" max="14">
+              </div>
+              <div class="form-group">
+                <label for="plan-days-count">Schedule Duration</label>
+                <select id="plan-days-count" class="select-control">
+                  <option value="3">3 Days (Quick Sprint)</option>
+                  <option value="5">5 Days (Workweek)</option>
+                  <option value="7" selected>7 Days (Full Week)</option>
+                  <option value="14">14 Days (Two Weeks)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="plan-start-date">Start Date</label>
+                <input type="date" id="plan-start-date" class="input-control">
+              </div>
+            </div>
+
+            <!-- Subjects & Difficulties Table -->
+            <div style="margin-bottom: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary);">
+                  Subjects, Topic Difficulty (1–5), & Exam Dates
+                </label>
+                <button class="btn btn-secondary btn-sm" id="add-subject-row-btn">+ Add Subject</button>
+              </div>
+
+              <div id="planner-subjects-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- Dynamically populated subject rows -->
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+              <button type="button" class="btn btn-primary" id="generate-plan-submit-btn">
+                <span>⚡</span> Generate Study Timetable
+              </button>
+            </div>
+          </div>
+
+          <!-- Generated Timetable Results Display Area -->
+          <div id="planner-output-area">
+            <!-- Rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- 3. TASK MANAGEMENT VIEW -->
+        <section class="section-view" id="view-tasks">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Task Management</h2>
+              <p>Organize, track, and complete your academic assignments and study goals.</p>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="open-add-task-modal-btn">
+                <span>+</span> Add New Task
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <select class="select-control" id="task-filter-status">
+                <option value="">All Tasks</option>
+                <option value="pending">Pending Only</option>
+                <option value="completed">Completed Only</option>
+              </select>
+
+              <select class="select-control" id="task-filter-subject">
+                <option value="">All Subjects</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <input type="text" class="input-control" id="task-search-input" placeholder="Search tasks or notes..." style="min-width: 240px;">
+            </div>
+          </div>
+
+          <!-- Task List Container -->
+          <div class="card">
+            <div id="tasks-full-list" class="task-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. PROGRESS TRACKER VIEW -->
+        <section class="section-view" id="view-tracker">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Study Progress Tracker</h2>
+              <p>Live metrics and performance analytics computed directly from your tasks database.</p>
+            </div>
+          </div>
+
+          <!-- Tracker KPI Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon emerald">🎯</div>
+              <div class="stat-info">
+                <h3>Overall Completion</h3>
+                <div class="stat-value" id="tracker-completion-rate">0%</div>
+                <div class="stat-sub" id="tracker-tasks-ratio">0 of 0 tasks</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon indigo">⏱️</div>
+              <div class="stat-info">
+                <h3>Study Hours Done</h3>
+                <div class="stat-value" id="tracker-completed-hours">0.0</div>
+                <div class="stat-sub" id="tracker-total-hours">of 0.0 hrs total</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon amber">📌</div>
+              <div class="stat-info">
+                <h3>Pending Tasks</h3>
+                <div class="stat-value" id="tracker-pending-count">0</div>
+                <div class="stat-sub">In-progress</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon rose">⚠️</div>
+              <div class="stat-info">
+                <h3>Overdue Tasks</h3>
+                <div class="stat-value" id="tracker-overdue-count">0</div>
+                <div class="stat-sub">Needs attention</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- Subject-wise Progress -->
+            <div class="card">
+              <div class="card-title">
+                <h3>Subject-Wise Completion Rates</h3>
+              </div>
+              <div id="tracker-subject-breakdown" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+
+            <!-- Priority Distribution Breakdown -->
+            <div class="card">
+              <div class="card-title">
+                <h3>Task Priority Distribution</h3>
+              </div>
+              <div id="tracker-priority-breakdown" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. STUDENT PROFILE VIEW -->
+        <section class="section-view" id="view-profile">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Student Profile & Study Preferences</h2>
+              <p>Configure your academic details and daily study availability.</p>
+            </div>
+          </div>
+
+          <div class="card" style="max-width: 800px;">
+            <form id="profile-form">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+                <div class="form-group">
+                  <label for="prof-name">Full Name *</label>
+                  <input type="text" id="prof-name" class="input-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="prof-email">Email Address</label>
+                  <input type="email" id="prof-email" class="input-control">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+                <div class="form-group">
+                  <label for="prof-institution">University / College / Institution</label>
+                  <input type="text" id="prof-institution" class="input-control">
+                </div>
+                <div class="form-group">
+                  <label for="prof-target-exam">Target Examination / Goal</label>
+                  <input type="text" id="prof-target-exam" class="input-control">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                  <label for="prof-daily-hours">Daily Available Study Hours</label>
+                  <input type="number" id="prof-daily-hours" class="input-control" step="0.5" min="1" max="16" required>
+                </div>
+                <div class="form-group">
+                  <label for="prof-study-time">Preferred Study Time of Day</label>
+                  <select id="prof-study-time" class="select-control">
+                    <option value="Morning">Morning (06:00 - 12:00)</option>
+                    <option value="Afternoon">Afternoon (12:00 - 17:00)</option>
+                    <option value="Evening" selected>Evening (17:00 - 22:00)</option>
+                    <option value="Night">Night (22:00 - 03:00)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Subjects Manager -->
+              <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label>Enrolled Subjects</label>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <input type="text" id="new-subject-input" class="input-control" placeholder="Add a new subject (e.g. Machine Learning)..." style="flex: 1;">
+                  <button type="button" class="btn btn-secondary" id="add-subject-tag-btn">+ Add</button>
+                </div>
+                <div id="profile-subject-tags" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <!-- Dynamically rendered pills -->
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+                <button type="submit" class="btn btn-primary" id="save-profile-btn">
+                  <span>💾</span> Save Profile Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- 6. FOCUS MUSIC VIEW -->
+        <section class="section-view" id="view-music">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Focus Music & Ambient Study Audio</h2>
+              <p>Curated Spotify and YouTube study playlists categorized by study mood and audio style.</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom: 1.5rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: flex-end;">
+              <div class="form-group">
+                <label for="music-mood">Study Mood</label>
+                <select id="music-mood" class="select-control">
+                  <option value="focused">Focused (Deep Concentration)</option>
+                  <option value="calm">Calm (Relaxed & Stress-Free)</option>
+                  <option value="energetic">Energetic (High Alertness)</option>
+                  <option value="melancholy">Melancholy (Late Night Focus)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="music-lang">Language Preference</label>
+                <select id="music-lang" class="select-control">
+                  <option value="english">English / Instrumental</option>
+                  <option value="tamil">Tamil Focus Melodies</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="music-ptype">Playlist Style</label>
+                <select id="music-ptype" class="select-control">
+                  <option value="lofi">Lofi Hip Hop Beats</option>
+                  <option value="pop">Chill Acoustic & Pop</option>
+                  <option value="melody">Ambient Melody & Piano</option>
+                  <option value="beats">Deep Electronic Beats</option>
+                </select>
+              </div>
+
+              <div>
+                <button class="btn btn-primary" id="load-music-btn" style="width: 100%;">
+                  <span>🎧</span> Load Playlist
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Music Players Container -->
+          <div class="card" id="music-player-card">
+            <div class="card-title">
+              <div>
+                <h3 id="current-playlist-title">English • Lofi • Focused</h3>
+                <span id="current-playlist-desc" style="font-size: 0.8rem; color: var(--text-secondary);">Focused mood • English lofi playlist</span>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <a id="spotify-external-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Open in Spotify ↗</a>
+                <a id="youtube-external-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Open in YouTube ↗</a>
+              </div>
+            </div>
+
+            <div class="music-grid">
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">YouTube Audio / Video Stream</h4>
+                <div class="embed-container">
+                  <iframe id="youtube-iframe" src="https://www.youtube.com/embed/jfKfPfyJRdk" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+              </div>
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Spotify Playlist Embed</h4>
+                <div class="embed-container">
+                  <iframe id="spotify-iframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhn9wzrS" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- AI ASSISTANT MODAL / SLIDE-OVER -->
+  <div class="modal-overlay" id="assistant-modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.3rem;">🤖</span>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Academic AI Study Coach</h3>
+            <span id="assistant-model-badge" style="font-size: 0.75rem; color: var(--accent-cyan);">OpenRouter / Rule-Based Heuristic</span>
+          </div>
+        </div>
+        <button class="icon-btn" id="close-assistant-btn" style="font-size: 1.25rem;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding: 1.25rem;">
+        <div id="assistant-chat-log" style="display: flex; flex-direction: column; gap: 0.75rem; min-height: 240px; max-height: 350px; overflow-y: auto;">
+          <div style="background: rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.875rem;">
+            👋 <strong>Hello!</strong> I am your personal AI Study Assistant. Ask me anything about exam preparation strategies, prioritizing your subjects, time management techniques, or understanding complex topics.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.75rem;">
+          <button class="btn btn-secondary btn-sm" onclick="app.setAssistantPrompt('How can I overcome study procrastination?')">Procrastination?</button>
+          <button class="btn btn-secondary btn-sm" onclick="app.setAssistantPrompt('Explain the 50/10 Pomodoro technique.')">Pomodoro Technique?</button>
+          <button class="btn btn-secondary btn-sm" onclick="app.setAssistantPrompt('Give me a revision plan for difficult topics.')">Difficult Topics Revision?</button>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+          <input type="text" id="assistant-prompt-input" class="input-control" placeholder="Ask your study question..." style="flex: 1;">
+          <button class="btn btn-primary" id="assistant-send-btn">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT TASK MODAL -->
+  <div class="modal-overlay" id="task-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="task-modal-title">Add New Study Task</h3>
+        <button class="icon-btn" id="close-task-modal-btn">✕</button>
+      </div>
+      <form id="task-form">
+        <input type="hidden" id="task-form-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="task-form-title">Task Title *</label>
+            <input type="text" id="task-form-title" class="input-control" placeholder="e.g. Complete Dynamic Programming Homework" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="task-form-subject">Subject *</label>
+              <input type="text" id="task-form-subject" class="input-control" placeholder="e.g. Data Structures" required>
+            </div>
+            <div class="form-group">
+              <label for="task-form-priority">Priority *</label>
+              <select id="task-form-priority" class="select-control">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="task-form-deadline">Deadline Date *</label>
+              <input type="date" id="task-form-deadline" class="input-control" required>
+            </div>
+            <div class="form-group">
+              <label for="task-form-duration">Estimated Duration (Mins)</label>
+              <input type="number" id="task-form-duration" class="input-control" value="60" min="10" step="5">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-form-notes">Additional Notes / Key Topics</label>
+            <textarea id="task-form-notes" class="input-control" rows="3" placeholder="Optional notes, chapters, formulas..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-task-modal-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="save-task-modal-btn">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- JavaScript Applications -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
